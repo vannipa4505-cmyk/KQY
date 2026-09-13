@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ร้านค้าออนไลน์ VIP</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; }
+    
+    /* แถบเมนูด้านบน */
+    nav { background: #1e293b; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+    nav h1 { font-size: 1.4rem; color: #38bdf8; }
+    .user-info { display: flex; align-items: center; gap: 0.5rem; }
+    .balance-box { background: #0f172a; border: 1px solid #38bdf8; padding: 0.4rem 0.8rem; border-radius: 6px; color: #38bdf8; font-weight: bold; }
+    .topup-btn { background: #10b981; color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .topup-btn:hover { background: #059669; }
+    .code-btn { background: #8b5cf6; color: white; border: none; padding: 0.5rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .code-btn:hover { background: #7c3aed; }
+
+    /* ส่วนแสดงสินค้า */
+    .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+    .card { background: #1e293b; border-radius: 10px; border: 1px solid #334155; overflow: hidden; padding: 1rem; text-align: center; }
+    .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+    .card-title { font-size: 1.1rem; margin: 0.8rem 0; font-weight: bold; }
+    .card-price { color: #38bdf8; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; }
+    .buy-btn { width: 100%; background: #38bdf8; color: #0f172a; border: none; padding: 0.6rem; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    .buy-btn:hover { background: #0284c7; color: white; }
+
+    /* หน้าต่าง Popup */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 100; }
+    .modal.active { display: flex; }
+    .modal-content { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 2rem; width: 90%; max-width: 400px; text-align: center; position: relative; }
+    .close-btn { position: absolute; top: 10px; right: 15px; color: #94a3b8; font-size: 1.5rem; cursor: pointer; }
+    .form-input { width: 100%; padding: 0.7rem; margin: 1rem 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; text-align: center; font-size: 0.9rem; }
+    .confirm-btn { width: 100%; color: white; border: none; padding: 0.7rem; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+    .bg-green { background: #10b981; }
+    .bg-purple { background: #8b5cf6; }
+  </style>
+</head>
+<body>
+
+  <!-- แถบด้านบน -->
+  <nav>
+    <h1>🛒 Store VIP</h1>
+    <div class="user-info">
+      <div class="balance-box">เครดิต: <span id="user-balance">0</span> ฿</div>
+      <button class="code-btn" onclick="toggleModal('code-modal', true)">🎁 ใส่โค้ด</button>
+      <button class="topup-btn" onclick="toggleModal('topup-modal', true)">💳 เติมเงิน</button>
+    </div>
+  </nav>
+
+  <!-- หน้าแสดงรายการสินค้า -->
+  <div class="container">
+    <h2>🔥 สินค้าทั้งหมด</h2>
+    <div class="grid">
+      
+      <div class="card">
+        <img src="https://via.placeholder.com/300x180/16213e/ffffff?text=Blox+Fruits+Script" alt="สคริปต์">
+        <div class="card-title">สคริปต์ Blox Fruits VIP</div>
+        <div class="card-price">฿50</div>
+        <button class="buy-btn" onclick="buyProduct('สคริปต์ Blox Fruits VIP', 50)">สั่งซื้อสินค้า</button>
+      </div>
+
+      <div class="card">
+        <img src="https://via.placeholder.com/300x180/0f3460/ffffff?text=Free+Fire+ID" alt="ไอดีเกม">
+        <div class="card-title">ไอดีเกม Free Fire ตลับเทพ</div>
+        <div class="card-price">฿150</div>
+        <button class="buy-btn" onclick="buyProduct('ไอดี Free Fire', 150)">สั่งซื้อสินค้า</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Pop-up เติมเงินผ่านซองอั่งเปา TrueMoney -->
+  <div id="topup-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="toggleModal('topup-modal', false)">&times;</span>
+      <h3 style="margin-bottom: 0.5rem; color: #38bdf8;">💳 เติมเงิน TrueMoney อั่งเปา</h3>
+      <p style="font-size: 0.85rem; color: #94a3b8;">ก๊อปปี้ ลิงก์ซองอั่งเปา มาวางเพื่อรับเครดิตทันที</p>
+      
+      <input type="text" id="voucher-url" class="form-input" placeholder="https://gift.truemoney.com/v1/?v=...">
+      
+      <button id="btn-topup-submit" class="confirm-btn bg-green" onclick="processTopup()">ยืนยันการเติมเงิน</button>
+    </div>
+  </div>
+
+  <!-- Pop-up ใส่โค้ดรางวัล -->
+  <div id="code-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="toggleModal('code-modal', false)">&times;</span>
+      <h3 style="margin-bottom: 0.5rem; color: #a855f7;">🎁 ระบบแลกโค้ดรางวัล</h3>
+      <p style="font-size: 0.85rem; color: #94a3b8;">กรอก Code เพื่อรับเครดิตฟรี หรือส่วนลด</p>
+      
+      <input type="text" id="gift-code" class="form-input" placeholder="กรอก Code ตรงนี้ (เช่น FREE10, VIP50)">
+      
+      <button class="confirm-btn bg-purple" onclick="processCode()">ยืนยันการใช้โค้ด</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ เปลี่ยนเป็นเบอร์ TrueMoney Wallet ของคุณที่นี่สำหรับรับเงินซอง
+    const MY_PHONE_NUMBER = "0812345678"; 
+
+    // โหลดเครดิตเดิมของผู้ใช้จากเบราว์เซอร์
+    let balance = Number(localStorage.getItem('user_balance')) || 0;
+    document.getElementById('user-balance').innerText = balance.toLocaleString();
+
+    function updateBalance(amount) {
+      balance += amount;
+      localStorage.setItem('user_balance', balance);
+      document.getElementById('user-balance').innerText = balance.toLocaleString();
+    }
+
+    // เปิด-ปิด Popup
+    function toggleModal(id, show) {
+      const modal = document.getElementById(id);
+      if (show) modal.classList.add('active');
+      else modal.classList.remove('active');
+    }
+
+    // ระบบเติมเงินผ่าน TrueMoney Gift API (เติมเงินเข้าจริง)
+    async function processTopup() {
+      const voucherInput = document.getElementById('voucher-url').value.trim();
+      const btn = document.getElementById('btn-topup-submit');
+
+      if (!voucherInput) {
+        alert('กรุณากรอกลิงก์ซองอั่งเปา TrueMoney ก่อนครับ!');
+        return;
+      }
+
+      let voucherCode = voucherInput;
+      if (voucherInput.includes('v=')) {
+        voucherCode = voucherInput.split('v=')[1].split('&')[0];
+      }
+
+      btn.innerText = "กำลังตรวจสอบซอง...";
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(`https://truemoney-gift-api.vercel.app/api/redeem`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: MY_PHONE_NUMBER,
+            voucher_hash: voucherCode
+          })
+        });
+
+        const resData = await response.json();
+
+        if (response.ok && resData.status === 'SUCCESS') {
+          const receivedAmount = Number(resData.amount);
+          updateBalance(receivedAmount);
+          alert(`🎉 เติมเงินสำเร็จ!\n💰 ได้รับเครดิตจำนวน: ฿${receivedAmount}`);
+          toggleModal('topup-modal', false);
+          document.getElementById('voucher-url').value = '';
+        } else {
+          alert(`❌ เติมเงินไม่สำเร็จ: ${resData.message || 'ลิงก์ซองอั่งเปาไม่ถูกต้อง หรือถูกใช้งานไปแล้ว'}`);
+        }
+      } catch (err) {
+        alert('❌ เกิดข้อผิดพลาดในการเชื่อมต่อระบบเติมเงิน กรุณาตรวจสอบลิงก์ซองอั่งเปาอีกครั้ง');
+      } finally {
+        btn.innerText = "ยืนยันการเติมเงิน";
+        btn.disabled = false;
+      }
+    }
+
+    // ระบบใช้งานโค้ดของขวัญ
+    function processCode() {
+      const code = document.getElementById('gift-code').value.trim().toUpperCase();
+      if (!code) {
+        alert('กรุณากรอกโค้ดก่อนครับ!');
+        return;
+      }
+
+      if (code === "FREE10") {
+        updateBalance(10);
+        alert('🎉 ยินดีด้วย! คุณได้รับเครดิตฟรี 10 บาท');
+        toggleModal('code-modal', false);
+      } else if (code === "VIP50") {
+        updateBalance(50);
+        alert('🎉 ยินดีด้วย! คุณได้รับเครดิตฟรี 50 บาท');
+        toggleModal('code-modal', false);
+      } else {
+        alert(`❌ โค้ด "${code}" ไม่ถูกต้อง หรือหมดอายุไปแล้ว!`);
+      }
+      document.getElementById('gift-code').value = '';
+    }
+
+    // ระบบสั่งซื้อสินค้า
+    function buyProduct(name, price) {
+      if (balance < price) {
+        alert(`❌ เครดิตไม่พอสำหรับซื้อ ${name} (ต้องการ ฿${price})\n\n👉 เครดิตของคุณมี ฿${balance} กรุณากดเติมเงินก่อนครับ`);
+      } else {
+        updateBalance(-price);
+        alert(`🎉 สั่งซื้อสำเร็จ!\n📦 คุณได้สั่งซื้อ: ${name}\n💰 หักเครดิต: ฿${price}\n\nขอบคุณที่อุดหนุนครับ!`);
+      }
+    }
+  </script>
+
+</body>
+  </html>
+  
